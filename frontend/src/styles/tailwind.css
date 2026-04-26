@@ -1,0 +1,64 @@
+@import "tailwindcss";
+
+@theme {
+  /* Typography */
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+  /* Light theme tokens */
+  --color-surface: #faf8f4;
+  --color-surface-2: #f4efe7;
+  --color-ink: #0b0b0a;
+  --color-line: rgba(11, 11, 10, 0.10);
+  --color-muted: rgba(11, 11, 10, 0.68);
+  --color-gold: #cbb37a;
+  --color-gold-2: #b99752;
+  --color-success: #15803d;
+  --color-danger: #b91c1c;
+}
+
+:root[data-theme="dark"] {
+  --color-surface: #0c0c0b;
+  --color-surface-2: #141412;
+  --color-ink: #f6f3ee;
+  --color-line: rgba(246, 243, 238, 0.12);
+  --color-muted: rgba(246, 243, 238, 0.72);
+  --color-gold: #d7c08b;
+  --color-gold-2: #c7a55c;
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    text-rendering: geometricPrecision;
+  }
+
+  body {
+    @apply bg-surface text-ink;
+    overflow-x: hidden;
+  }
+
+  a {
+    @apply text-inherit;
+  }
+}
+
+@layer utilities {
+  .bg-surface { background-color: var(--color-surface); }
+  .bg-surface-2 { background-color: var(--color-surface-2); }
+  .text-ink { color: var(--color-ink); }
+  .text-muted { color: var(--color-muted); }
+  .border-line { border-color: var(--color-line); }
+  .text-gold { color: var(--color-gold); }
+  .bg-gold { background-color: var(--color-gold); }
+  .bg-gold-2 { background-color: var(--color-gold-2); }
+
+  .font-serif { font-family: var(--font-serif); }
+
+  .shadow-soft {
+    box-shadow:
+      0 1px 0 rgba(0,0,0,0.04),
+      0 24px 60px rgba(0,0,0,0.10);
+  }
+}
