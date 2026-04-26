@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAdminToken, logoutAdmin } from "@/services/auth";
 
-const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5001/api";
+const baseURL = import.meta.env.VITE_API_URL || "https://life-desighner.onrender.com/api";
 
 export const API_BASE_URL = baseURL;
 export const FILES_BASE_URL = baseURL.replace(/\/api\/?$/, "");
