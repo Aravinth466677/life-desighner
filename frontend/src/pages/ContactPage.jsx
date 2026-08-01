@@ -9,8 +9,9 @@ import { submitLead } from "@/services/leads";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Enter your name"),
-  whatsapp: z.string().trim().min(8, "Enter a valid WhatsApp number"),
-  place: z.string().trim().min(2, "Enter your place"),
+  email: z.string().trim().email("Enter a valid email"),
+  phone: z.string().trim().min(8, "Enter a valid phone number"),
+  message: z.string().trim().min(5, "Enter a message"),
 });
 
 function WhatsAppIcon() {
@@ -39,8 +40,9 @@ export default function ContactPage() {
     resolver: zodResolver(schema),
     defaultValues: {
       name: "",
-      whatsapp: "",
-      place: "",
+      email: "",
+      phone: "",
+      message: "",
     },
   });
 
@@ -67,16 +69,23 @@ export default function ContactPage() {
               error={errors.name?.message}
             />
             <Input
-              label="WhatsApp"
-              placeholder="+91 98765 43210"
-              {...register("whatsapp")}
-              error={errors.whatsapp?.message}
+              label="Email"
+              type="email"
+              placeholder="you@example.com"
+              {...register("email")}
+              error={errors.email?.message}
             />
             <Input
-              label="Place"
-              placeholder="Chennai"
-              {...register("place")}
-              error={errors.place?.message}
+              label="Phone"
+              placeholder="+91 98765 43210"
+              {...register("phone")}
+              error={errors.phone?.message}
+            />
+            <Input
+              label="Message"
+              placeholder="Tell us about your project"
+              {...register("message")}
+              error={errors.message?.message}
             />
 
             <Button type="submit" variant="gold" size="lg" disabled={isSubmitting}>

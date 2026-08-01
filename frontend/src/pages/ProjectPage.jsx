@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import ProjectGallery from "@/components/projects/ProjectGallery";
 import Button from "@/components/ui/Button";
 import Skeleton from "@/components/ui/Skeleton";
-import { getProject, listProjects } from "@/services/projects";
+import { getProject } from "@/services/projects";
 
 export default function ProjectPage() {
   const { id } = useParams();
@@ -15,25 +15,11 @@ export default function ProjectPage() {
   useEffect(() => {
     let alive = true;
     setLoading(true);
-
     getProject(id)
-      .then((p) => alive && setProject(p))
-      .catch(async () => {
-        // Backward compatibility if backend doesn't have /:id yet
-        try {
-          const data = await listProjects({ page: 1, limit: 200 });
-          const found = (data.items ?? []).find((x) => x._id === id);
-          if (!found) throw new Error("Not found");
-          if (alive) setProject(found);
-        } catch {
-          toast.error("Project not found");
-        }
-      })
-      .finally(() => alive && setLoading(false));
-
-    return () => {
-      alive = false;
-    };
+      .then((p) => { if (alive) setProject(p); })
+      .catch(() => toast.error("Project not found"))
+      .finally(() => { if (alive) setLoading(false); });
+    return () => { alive = false; };
   }, [id]);
 
   if (loading) {
@@ -54,9 +40,7 @@ export default function ProjectPage() {
       <main className="mx-auto max-w-6xl px-4 py-12 md:py-14">
         <p className="text-muted">No project found.</p>
         <div className="mt-6">
-          <Button as={Link} to="/projects" variant="outline">
-            Back to projects
-          </Button>
+          <Button as={Link} to="/projects" variant="outline">Back to projects</Button>
         </div>
       </main>
     );
@@ -64,27 +48,22 @@ export default function ProjectPage() {
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-12 md:py-14">
-      <p className="text-xs tracking-[0.24em] text-muted uppercase">
-        {project.category}
-      </p>
-      <h1 className="mt-2 font-serif text-4xl md:text-5xl">
-        {project.title}
-      </h1>
+      <p className="text-xs tracking-[0.24em] text-muted uppercase">{project.category}</p>
+      <h1 className="mt-2 font-serif text-4xl md:text-5xl">{project.title}</h1>
       <p className="mt-3 text-muted">{project.location}</p>
 
       <div className="mt-8">
         <ProjectGallery project={project} />
       </div>
 
+      {project.description && (
+        <p className="mt-8 max-w-prose text-muted">{project.description}</p>
+      )}
+
       <div className="mt-10 flex gap-3">
-        <Button as={Link} to="/projects" variant="outline">
-          Back
-        </Button>
-        <Button as={Link} to="/contact" variant="gold">
-          Start a similar project
-        </Button>
+        <Button as={Link} to="/projects" variant="outline">Back</Button>
+        <Button as={Link} to="/contact" variant="gold">Start a similar project</Button>
       </div>
     </main>
   );
 }
-

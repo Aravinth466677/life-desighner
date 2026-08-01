@@ -1,54 +1,53 @@
-import { api } from "@/services/api";
+import { publicApi, adminApi } from "@/services/api";
 
-function normalizeProjectsResponse(data) {
-  if (Array.isArray(data)) {
-    return {
-      items: data,
-      page: 1,
-      pages: 1,
-      total: data.length,
-    };
-  }
-  return data;
+// GET /api/projects → ProjectResponse[]  (no query params per spec)
+export async function listProjects() {
+  const res = await publicApi.get("/projects");
+  return Array.isArray(res.data) ? res.data : [];
 }
 
-export async function listProjects({
-  page = 1,
-  limit = 12,
-  category,
-  q,
-} = {}) {
-  const params = {};
-  if (page) params.page = page;
-  if (limit) params.limit = limit;
-  if (category && category !== "all") params.category = category;
-  if (q) params.q = q;
-
-  const res = await api.get("/projects", { params });
-  return normalizeProjectsResponse(res.data);
-}
-
+// GET /api/projects/{id} → ProjectResponse
 export async function getProject(id) {
-  const res = await api.get(`/projects/${id}`);
+  const res = await publicApi.get(`/projects/${id}`);
   return res.data;
 }
 
-export async function createProject(payload) {
-  const res = await api.post("/projects", payload, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+// POST /api/projects?title=&description=&category=&location=  + multipart heroImage
+// CreateProject: query params for text fields, heroImage as multipart body
+export async function createProject({ title, description, category, location, heroImage }) {
+  const params = { title, description, category };
+  if (location) params.location = location;
+
+  const fd = new FormData();
+  fd.append("heroImage", heroImage);
+
+  const res = await adminApi.post("/projects", fd, { params });
   return res.data;
 }
 
-export async function updateProject(id, payload) {
-  const res = await api.put(`/projects/${id}`, payload, {
-    headers: { "Content-Type": "multipart/form-data" },
-  });
+// PUT /api/projects/{id}  body: UpdateProjectRequest JSON
+// { title, description, category, location, heroImage }
+export async function updateProject(id, body) {
+  const res = await adminApi.put(`/projects/${id}`, body);
   return res.data;
 }
 
+// DELETE /api/projects/{id}
 export async function deleteProject(id) {
-  const res = await api.delete(`/projects/${id}`);
+  const res = await adminApi.delete(`/projects/${id}`);
   return res.data;
 }
 
+// POST /api/projects/{id}/gallery  multipart images[]
+export async function uploadGallery(id, files) {
+  const fd = new FormData();
+  for (const f of files) fd.append("images", f);
+  const res = await adminApi.post(`/projects/${id}/gallery`, fd);
+  return res.data;
+}
+
+// DELETE /api/projects/gallery/{imageId}  imageId is Long
+export async function deleteGalleryImage(imageId) {
+  const res = await adminApi.delete(`/projects/gallery/${imageId}`);
+  return res.data;
+}

@@ -15,16 +15,14 @@ export default function HomePage() {
   useEffect(() => {
     let alive = true;
     setLoading(true);
-    listProjects({ page: 1, limit: 6 })
+    listProjects()
       .then((data) => {
         if (!alive) return;
-        setItems(data.items ?? []);
+        setItems(data.slice(0, 6));
       })
       .catch(() => toast.error("Failed to load projects"))
-      .finally(() => alive && setLoading(false));
-    return () => {
-      alive = false;
-    };
+      .finally(() => { if (alive) setLoading(false); });
+    return () => { alive = false; };
   }, []);
 
   return (

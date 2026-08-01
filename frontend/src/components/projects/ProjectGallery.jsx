@@ -1,28 +1,15 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { resolveMediaUrl } from "@/lib/media";
 
-function normalizeImages(project) {
-  const fromNew = Array.isArray(project?.gallery)
-    ? project.gallery.map((g) => (typeof g === "string" ? g : g.url))
-    : [];
-
-  const fromImages = Array.isArray(project?.images)
-    ? project.images.map((g) => (typeof g === "string" ? g : g.url))
-    : [];
-
-  const cover =
-    project?.cover?.url || project?.coverImage || project?.image || null;
-
-  const all = [cover, ...fromNew, ...fromImages].filter(Boolean);
-  return Array.from(new Set(all));
+// ProjectResponse: heroImage: string, gallery: string[]
+function buildImages(project) {
+  const hero = project?.heroImage ?? null;
+  const rest = Array.isArray(project?.gallery) ? project.gallery : [];
+  return [...new Set([hero, ...rest].filter(Boolean))];
 }
 
 export default function ProjectGallery({ project }) {
-  const images = useMemo(
-    () => normalizeImages(project).map(resolveMediaUrl).filter(Boolean),
-    [project]
-  );
+  const images = buildImages(project);
   const [active, setActive] = useState(0);
 
   if (!images.length) return null;
@@ -46,30 +33,24 @@ export default function ProjectGallery({ project }) {
         </div>
       </div>
 
-      <div className="flex gap-2 overflow-x-auto md:flex-col md:overflow-visible">
-        {images.map((src, idx) => {
-          const isActive = idx === active;
-          return (
+      {images.length > 1 && (
+        <div className="flex gap-2 overflow-x-auto md:flex-col md:overflow-visible">
+          {images.map((src, idx) => (
             <button
-              key={`${src}-${idx}`}
+              key={src}
               type="button"
               onClick={() => setActive(idx)}
               className={[
                 "shrink-0 overflow-hidden rounded-xl border",
-                isActive ? "border-ink" : "border-line hover:border-ink/40",
+                idx === active ? "border-ink" : "border-line hover:border-ink/40",
               ].join(" ")}
               aria-label={`Select image ${idx + 1}`}
             >
-              <img
-                src={src}
-                alt=""
-                className="h-20 w-24 object-cover md:h-20 md:w-full"
-                loading="lazy"
-              />
+              <img src={src} alt="" className="h-20 w-24 object-cover md:h-20 md:w-full" loading="lazy" />
             </button>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

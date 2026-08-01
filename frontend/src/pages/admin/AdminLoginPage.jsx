@@ -8,7 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import Logo from "@/components/brand/Logo";
-import { api } from "@/services/api";
+import { adminApi } from "@/services/api";
 import { getAdminToken, setAdminToken } from "@/services/auth";
 
 const schema = z.object({
@@ -40,12 +40,14 @@ export default function AdminLoginPage() {
 
   const onSubmit = async (values) => {
     try {
-      const res = await api.post("/auth/login", values);
-      setAdminToken(res.data.token);
+      const res = await adminApi.post("/auth/login", values);
+      const token = res.data?.token ?? res.data?.data?.token ?? res.data?.accessToken;
+      if (!token) throw new Error("No token in response");
+      setAdminToken(token);
       toast.success("Welcome back");
       navigate(from, { replace: true });
     } catch (err) {
-      toast.error(err?.response?.data?.message || "Login failed");
+      toast.error(err?.response?.data?.message || err?.message || "Login failed");
     }
   };
 

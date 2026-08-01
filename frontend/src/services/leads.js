@@ -1,16 +1,16 @@
-import { api } from "@/services/api";
+import { publicApi, adminApi } from "@/services/api";
 
 export async function submitLead(payload) {
-  const res = await api.post("/contacts", payload);
+  const res = await publicApi.post("/contact", payload);
   return res.data;
 }
 
 export async function listLeads() {
-  const res = await api.get("/contacts");
-  return res.data;
+  const res = await adminApi.get("/contact");
+  return Array.isArray(res.data) ? res.data : [];
 }
 
-export async function markContacted(id) {
-  const res = await api.put(`/contacts/${id}/contacted`);
+export async function deleteLead(id) {
+  const res = await adminApi.delete(`/contact/${id}`);
   return res.data;
 }
