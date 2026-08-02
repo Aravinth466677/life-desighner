@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// ProjectResponse: heroImage: string, gallery: string[]
+// gallery items: { id, imageUrl, displayOrder }
 function buildImages(project) {
   const hero = project?.heroImage ?? null;
-  const rest = Array.isArray(project?.gallery) ? project.gallery : [];
+  const rest = Array.isArray(project?.gallery)
+    ? project.gallery.map((g) => (typeof g === "string" ? g : g.imageUrl)).filter(Boolean)
+    : [];
   return [...new Set([hero, ...rest].filter(Boolean))];
 }
 

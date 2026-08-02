@@ -145,10 +145,8 @@ function EditForm({ initial, onSave, busy }) {
 }
 
 // ── Gallery upload tab ─────────────────────────────────────────────────────────
-// POST /api/projects/{id}/gallery  multipart images[]
-// "Add Images" button appends to the queue — never replaces already-selected files
-function GalleryTab({ project, onAddImages, busy }) {
-  const [queue, setQueue] = useState([]); // { file, preview }[]
+function GalleryTab({ project, onAddImages, onDeleteImage, busy }) {
+  const [queue, setQueue] = useState([]);
   const addInputRef = useState(null);
   const gallery = project?.gallery ?? [];
 
@@ -157,8 +155,8 @@ function GalleryTab({ project, onAddImages, busy }) {
       file: f,
       preview: URL.createObjectURL(f),
     }));
-    setQueue((prev) => [...prev, ...incoming]); // append, never replace
-    e.target.value = ""; // reset so same file can be re-added if needed
+    setQueue((prev) => [...prev, ...incoming]);
+    e.target.value = "";
   };
 
   const removeFromQueue = (idx) => {
@@ -177,9 +175,26 @@ function GalleryTab({ project, onAddImages, busy }) {
         <div>
           <p className="mb-2 text-xs tracking-[0.18em] text-muted uppercase">Current Gallery ({gallery.length})</p>
           <div className="flex flex-wrap gap-2">
-            {gallery.map((url, idx) => (
-              <img key={idx} src={url} alt="" className="h-20 w-20 rounded-lg object-cover border border-line" />
-            ))}
+            {gallery.map((item, idx) => {
+              const url = typeof item === "string" ? item : (item.imageUrl ?? item.url);
+              const imageId = typeof item === "object" ? item.id : null;
+              return (
+                <div key={idx} className="relative">
+                  <img src={url} alt="" className="h-20 w-20 rounded-lg object-cover border border-line" />
+                  {imageId && (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => onDeleteImage(imageId)}
+                      className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-xs leading-none shadow disabled:opacity-50 hover:bg-red-600"
+                      title="Delete image"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -239,7 +254,7 @@ export default function AdminProjectsPage() {
   const [editTab, setEditTab] = useState("info");
   const [busy, setBusy] = useState(false);
 
-  const { allProjects, loading, create, update, remove, addImages } = useProjects();
+  const { allProjects, loading, create, update, remove, addImages, removeImage } = useProjects();
 
   const stats = useMemo(() => ({
     total: allProjects.length,
@@ -295,8 +310,26 @@ export default function AdminProjectsPage() {
     setBusy(true);
     try {
       await addImages(id, files);
+      // Refresh editing state so gallery tab shows new images
+      setEditing((prev) => allProjects.find((p) => p.id === prev?.id) ?? prev);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Upload failed");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleDeleteImage = async (imageId) => {
+    if (!window.confirm("Delete this image?")) return;
+    setBusy(true);
+    try {
+      await removeImage(imageId);
+      setEditing((prev) => ({
+        ...prev,
+        gallery: (prev.gallery ?? []).filter((img) => img.id !== imageId),
+      }));
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Delete failed");
     } finally {
       setBusy(false);
     }
@@ -370,7 +403,7 @@ export default function AdminProjectsPage() {
             </div>
             {editTab === "info"
               ? <EditForm initial={editing} onSave={handleUpdate} busy={busy} />
-              : <GalleryTab project={editing} onAddImages={handleAddImages} busy={busy} />
+              : <GalleryTab project={editing} onAddImages={handleAddImages} onDeleteImage={handleDeleteImage} busy={busy} />
             }
           </div>
         ) : (
