@@ -52,7 +52,14 @@ export default function AdminLayout() {
       </header>
 
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 px-4 py-6 md:grid-cols-[220px_1fr]">
-        <aside className="rounded-2xl border border-line bg-surface-2 p-2">
+        <aside
+          className="rounded-2xl border border-line bg-surface-2 p-2"
+          style={{
+            backgroundColor: 'color-mix(in srgb, var(--color-surface) 60%, transparent)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)'
+          }}
+        >
           <nav className="flex flex-row gap-2 md:flex-col">
             <NavItem to="/admin/projects">Projects</NavItem>
             <NavItem to="/admin/leads">Leads</NavItem>

@@ -87,6 +87,11 @@ export default function SiteHeader() {
               exit={{ x: "-100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 260 }}
               className="absolute left-0 top-0 h-full w-[84%] max-w-xs border-r border-line bg-surface/85 backdrop-blur-2xl shadow-2xl p-5"
+              style={{
+                backgroundColor: 'color-mix(in srgb, var(--color-surface) 60%, transparent)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)'
+              }}
               aria-label="Mobile menu"
               onClick={(event) => event.stopPropagation()}
             >
