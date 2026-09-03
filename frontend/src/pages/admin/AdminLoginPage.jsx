@@ -10,6 +10,7 @@ import Button from "@/components/ui/Button";
 import Logo from "@/components/brand/Logo";
 import { adminApi } from "@/services/api";
 import { getAdminToken, setAdminToken } from "@/services/auth";
+import Noindex from "../../components/SEO/Noindex";
 
 const schema = z.object({
   email: z.string().trim().email("Enter a valid email"),
@@ -53,6 +54,7 @@ export default function AdminLoginPage() {
 
   return (
     <main className="min-h-dvh bg-surface text-ink">
+      <Noindex/>
       <div className="mx-auto max-w-md px-4 py-12">
         <div className="flex justify-center">
           <Logo />

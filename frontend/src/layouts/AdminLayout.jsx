@@ -2,6 +2,7 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { logoutAdmin } from "@/services/auth";
 import Logo from "@/components/brand/Logo";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+import Noindex from "../components/SEO/Noindex";
 
 function NavItem({ to, children }) {
   return (
@@ -30,6 +31,7 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-dvh bg-surface text-ink">
+      <Noindex/>
       <header className="sticky top-0 z-30 border-b border-line bg-surface/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">

@@ -6,10 +6,12 @@ import { Toaster } from "react-hot-toast";
 import { router } from "@/app/router";
 import { ThemeProvider } from "@/app/providers/ThemeProvider";
 import "@/styles/tailwind.css";
+import { HelmetProvider } from "react-helmet-async";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <ThemeProvider>
+    <HelmetProvider>
+      <ThemeProvider>
       <RouterProvider router={router} />
       <Toaster
         position="bottom-center"
@@ -17,7 +19,8 @@ createRoot(document.getElementById("root")).render(
           duration: 3500,
         }}
       />
-    </ThemeProvider>
+      </ThemeProvider>
+    </HelmetProvider>
   </StrictMode>
 );
 
