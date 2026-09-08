@@ -6,20 +6,79 @@ import Input from "@/components/ui/Input";
 import Modal from "@/components/ui/Modal";
 import Skeleton from "@/components/ui/Skeleton";
 import { useProjects } from "@/hooks/useProjects";
+import {
+  upsertFooterService,
+  removeFooterService,
+  getServiceForProject,
+} from "@/services/footerConfig";
 
 const CATEGORIES = [
   { value: "interior", label: "Interior" },
   { value: "exterior", label: "Exterior" },
 ];
 
+const SELECT_CLS =
+  "w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm outline-none focus:ring-4 focus:ring-[rgba(203,179,122,0.22)]";
+
+// ── Footer Service fieldset ────────────────────────────────────────────────────
+function FooterServiceFields({ addToFooter, setAddToFooter, serviceLabel, setServiceLabel, slug, setSlug }) {
+  return (
+    <div className="rounded-xl border border-line bg-surface-2 p-4 grid gap-3">
+      <label className="flex items-center gap-3 cursor-pointer select-none">
+        <input
+          type="checkbox"
+          checked={addToFooter}
+          onChange={(e) => setAddToFooter(e.target.checked)}
+          className="h-4 w-4 rounded accent-[var(--color-gold)]"
+        />
+        <span className="text-sm font-medium">Add to footer under Services</span>
+      </label>
+
+      {addToFooter && (
+        <>
+          <Input
+            label="Service display name (shown in footer)"
+            value={serviceLabel}
+            onChange={(e) => setServiceLabel(e.target.value)}
+            placeholder="Modular Kitchen Design"
+          />
+          <div>
+            <label className="mb-1 block text-xs tracking-[0.18em] text-muted uppercase">
+              URL slug
+            </label>
+            <div className="flex items-center gap-0 rounded-xl border border-line bg-surface overflow-hidden focus-within:ring-4 focus-within:ring-[rgba(203,179,122,0.22)]">
+              <span className="px-3 py-2.5 text-sm text-muted bg-surface-2 border-r border-line whitespace-nowrap">
+                /services/
+              </span>
+              <input
+                className="flex-1 bg-surface px-3 py-2.5 text-sm outline-none"
+                value={slug}
+                onChange={(e) =>
+                  setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/--+/g, "-"))
+                }
+                placeholder="modular-kitchen"
+              />
+            </div>
+            <p className="mt-1 text-xs text-muted">
+              Public URL: <span className="font-mono">/services/{slug || "your-slug"}</span>
+            </p>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 // ── Create form ────────────────────────────────────────────────────────────────
-// POST /api/projects?title=&description=&category=&location= + heroImage multipart
 function CreateForm({ onSave, busy }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
   const [category, setCategory] = useState("interior");
   const [heroImage, setHeroImage] = useState(null);
+  const [addToFooter, setAddToFooter] = useState(false);
+  const [serviceLabel, setServiceLabel] = useState("");
+  const [slug, setSlug] = useState("");
 
   const submit = async (e) => {
     e.preventDefault();
@@ -31,7 +90,18 @@ function CreateForm({ onSave, busy }) {
       toast.error("Hero image is required");
       return;
     }
-    await onSave({ title: title.trim(), description: description.trim(), category, location: location.trim(), heroImage });
+    if (addToFooter) {
+      if (!serviceLabel.trim()) { toast.error("Service display name is required"); return; }
+      if (!slug.trim()) { toast.error("URL slug is required"); return; }
+    }
+    await onSave({
+      title: title.trim(),
+      description: description.trim(),
+      category,
+      location: location.trim(),
+      heroImage,
+      footerService: addToFooter ? { serviceLabel: serviceLabel.trim(), slug: slug.trim(), enabled: true } : null,
+    });
   };
 
   return (
@@ -42,7 +112,7 @@ function CreateForm({ onSave, busy }) {
       <label className="block">
         <span className="mb-1 block text-xs tracking-[0.18em] text-muted uppercase">Category</span>
         <select
-          className="w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm outline-none focus:ring-4 focus:ring-[rgba(203,179,122,0.22)]"
+          className={SELECT_CLS}
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
@@ -57,6 +127,11 @@ function CreateForm({ onSave, busy }) {
           onChange={(e) => setHeroImage(e.target.files?.[0] ?? null)}
         />
       </label>
+      <FooterServiceFields
+        addToFooter={addToFooter} setAddToFooter={setAddToFooter}
+        serviceLabel={serviceLabel} setServiceLabel={setServiceLabel}
+        slug={slug} setSlug={setSlug}
+      />
       <Button type="submit" variant="gold" size="lg" disabled={busy}>
         {busy ? "Creating..." : "Create Project"}
       </Button>
@@ -74,6 +149,11 @@ function EditForm({ initial, onSave, busy }) {
   const [heroPreview, setHeroPreview] = useState(initial?.heroImage ?? null);
   const heroInputRef = useState(null);
 
+  const existing = initial?.id ? getServiceForProject(initial.id) : null;
+  const [addToFooter, setAddToFooter] = useState(!!existing);
+  const [serviceLabel, setServiceLabel] = useState(existing?.serviceLabel ?? "");
+  const [slug, setSlug] = useState(existing?.slug ?? "");
+
   const handleHeroChange = (e) => {
     const file = e.target.files?.[0] ?? null;
     if (!file) return;
@@ -88,6 +168,10 @@ function EditForm({ initial, onSave, busy }) {
       toast.error("Title, description and category are required");
       return;
     }
+    if (addToFooter) {
+      if (!serviceLabel.trim()) { toast.error("Service display name is required"); return; }
+      if (!slug.trim()) { toast.error("URL slug is required"); return; }
+    }
     await onSave({
       title: title.trim(),
       description: description.trim(),
@@ -95,6 +179,7 @@ function EditForm({ initial, onSave, busy }) {
       location: location.trim(),
       heroImage: initial?.heroImage ?? "",
       newHeroFile: newHero,
+      footerService: addToFooter ? { serviceLabel: serviceLabel.trim(), slug: slug.trim(), enabled: true } : null,
     });
   };
 
@@ -106,15 +191,13 @@ function EditForm({ initial, onSave, busy }) {
       <label className="block">
         <span className="mb-1 block text-xs tracking-[0.18em] text-muted uppercase">Category</span>
         <select
-          className="w-full rounded-xl border border-line bg-surface px-3 py-2.5 text-sm outline-none focus:ring-4 focus:ring-[rgba(203,179,122,0.22)]"
+          className={SELECT_CLS}
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
           {CATEGORIES.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
       </label>
-
-      {/* Hero image */}
       <div className="grid gap-2">
         <span className="text-xs tracking-[0.18em] text-muted uppercase">Hero Image</span>
         {heroPreview && (
@@ -126,17 +209,16 @@ function EditForm({ initial, onSave, busy }) {
           className="hidden"
           onChange={handleHeroChange}
         />
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => heroInputRef[0]?.click()}
-        >
-          {newHero ? "Change Image" : "Change Image"}
+        <Button type="button" variant="outline" size="sm" onClick={() => heroInputRef[0]?.click()}>
+          Change Image
         </Button>
         {newHero && <p className="text-xs text-muted">New image selected: {newHero.name}</p>}
       </div>
-
+      <FooterServiceFields
+        addToFooter={addToFooter} setAddToFooter={setAddToFooter}
+        serviceLabel={serviceLabel} setServiceLabel={setServiceLabel}
+        slug={slug} setSlug={setSlug}
+      />
       <Button type="submit" variant="gold" size="lg" disabled={busy}>
         {busy ? "Saving..." : "Update Project"}
       </Button>
@@ -199,7 +281,6 @@ function GalleryTab({ project, onAddImages, onDeleteImage, busy }) {
         </div>
       )}
 
-      {/* Queue preview — accumulates across multiple clicks */}
       {queue.length > 0 && (
         <div>
           <p className="mb-2 text-xs tracking-[0.18em] text-muted uppercase">To upload ({queue.length})</p>
@@ -220,7 +301,6 @@ function GalleryTab({ project, onAddImages, onDeleteImage, busy }) {
         </div>
       )}
 
-      {/* Hidden file input — multiple allowed */}
       <input
         ref={(el) => (addInputRef[0] = el)}
         type="file" accept="image/*" multiple
@@ -229,12 +309,7 @@ function GalleryTab({ project, onAddImages, onDeleteImage, busy }) {
       />
 
       <div className="flex gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => addInputRef[0]?.click()}
-          disabled={busy}
-        >
+        <Button type="button" variant="outline" onClick={() => addInputRef[0]?.click()} disabled={busy}>
           + Add Images
         </Button>
         {queue.length > 0 && (
@@ -265,7 +340,12 @@ export default function AdminProjectsPage() {
   const handleCreate = async (fields) => {
     setBusy(true);
     try {
-      await create(fields);
+      const { footerService, ...projectFields } = fields;
+      const newProject = await create(projectFields);
+      const newId = newProject?.id;
+      if (newId && footerService) {
+        upsertFooterService({ projectId: newId, ...footerService });
+      }
       setOpen(false);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Create failed");
@@ -277,17 +357,20 @@ export default function AdminProjectsPage() {
   const handleUpdate = async (body) => {
     setBusy(true);
     try {
-      const { newHeroFile, ...jsonBody } = body;
+      const { newHeroFile, footerService, ...jsonBody } = body;
       if (newHeroFile) {
-        // Upload new hero via gallery, then use the first new URL as heroImage
         await addImages(editing.id, [newHeroFile]);
-        // Reload to get the new gallery URL
-        const { default: { getProject } } = await import("@/services/projects");
+        const { getProject } = await import("@/services/projects");
         const refreshed = await getProject(editing.id);
         const newUrl = refreshed.gallery?.[refreshed.gallery.length - 1] ?? jsonBody.heroImage;
         await update(editing.id, { ...jsonBody, heroImage: newUrl });
       } else {
         await update(editing.id, jsonBody);
+      }
+      if (footerService) {
+        upsertFooterService({ projectId: editing.id, ...footerService });
+      } else {
+        removeFooterService(editing.id);
       }
       setOpen(false);
     } catch (err) {
@@ -301,6 +384,7 @@ export default function AdminProjectsPage() {
     if (!window.confirm("Delete this project?")) return;
     try {
       await remove(id);
+      removeFooterService(id);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Delete failed");
     }
@@ -310,7 +394,6 @@ export default function AdminProjectsPage() {
     setBusy(true);
     try {
       await addImages(id, files);
-      // Refresh editing state so gallery tab shows new images
       setEditing((prev) => allProjects.find((p) => p.id === prev?.id) ?? prev);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Upload failed");
@@ -362,24 +445,32 @@ export default function AdminProjectsPage() {
           </div>
         ))}
 
-        {!loading && allProjects.map((p) => (
-          <div key={p.id} className="rounded-2xl border border-line bg-surface shadow-soft overflow-hidden">
-            <div className="aspect-[4/3] bg-surface-2">
-              {p.heroImage && (
-                <img src={p.heroImage} alt={p.title} className="h-full w-full object-cover" loading="lazy" />
-              )}
-            </div>
-            <div className="p-4">
-              <p className="text-xs tracking-[0.18em] uppercase text-muted">{p.category}</p>
-              <h3 className="mt-1 font-serif text-xl">{p.title}</h3>
-              <p className="mt-1 text-sm text-muted">{p.location}</p>
-              <div className="mt-4 flex gap-2">
-                <Button variant="outline" className="flex-1" onClick={() => openEdit(p)}>Edit</Button>
-                <Button variant="danger" className="flex-1" onClick={() => handleRemove(p.id)}>Delete</Button>
+        {!loading && allProjects.map((p) => {
+          const svc = getServiceForProject(p.id);
+          return (
+            <div key={p.id} className="rounded-2xl border border-line bg-surface shadow-soft overflow-hidden">
+              <div className="aspect-[4/3] bg-surface-2">
+                {p.heroImage && (
+                  <img src={p.heroImage} alt={p.title} className="h-full w-full object-cover" loading="lazy" />
+                )}
+              </div>
+              <div className="p-4">
+                <p className="text-xs tracking-[0.18em] uppercase text-muted">{p.category}</p>
+                <h3 className="mt-1 font-serif text-xl">{p.title}</h3>
+                <p className="mt-1 text-sm text-muted">{p.location}</p>
+                {svc && (
+                  <p className="mt-1 text-xs text-gold font-mono">
+                    /services/{svc.slug} {!svc.enabled && "· disabled"}
+                  </p>
+                )}
+                <div className="mt-4 flex gap-2">
+                  <Button variant="outline" className="flex-1" onClick={() => openEdit(p)}>Edit</Button>
+                  <Button variant="danger" className="flex-1" onClick={() => handleRemove(p.id)}>Delete</Button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <Modal open={open} onClose={() => (busy ? null : setOpen(false))} title={editing ? "Edit Project" : "New Project"}>

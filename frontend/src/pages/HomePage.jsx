@@ -7,6 +7,7 @@ import Button from "@/components/ui/Button";
 import ProjectGrid from "@/components/projects/ProjectGrid";
 import ProjectGridSkeleton from "@/components/projects/ProjectGridSkeleton";
 import { listProjects } from "@/services/projects";
+import { Helmet } from "react-helmet-async";
 
 export default function HomePage() {
   const [loading, setLoading] = useState(true);
@@ -18,7 +19,7 @@ export default function HomePage() {
     listProjects()
       .then((data) => {
         if (!alive) return;
-        setItems(data.slice(0, 6));
+        setItems(data.slice(-4).reverse());
       })
       .catch(() => toast.error("Failed to load projects"))
       .finally(() => { if (alive) setLoading(false); });
@@ -27,8 +28,66 @@ export default function HomePage() {
 
   return (
     <main>
+      <Helmet>
+        <title>Interior Designer in Tamil Nadu | Life Designers</title>
+
+        <meta
+          name="description"
+          content="Life Designers creates modern interior and exterior spaces for homes and businesses, combining functional design with timeless aesthetics."
+        />
+
+        <link
+          rel="canonical"
+          href={`${window.location.origin}/`}
+        />
+
+         {/* Local Business Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "LocalBusiness",
+
+            name: "Life Designers",
+
+            description:
+              " Life Designers creates thoughtfully designed residential and commercial interior, modular kitchens, and exterior spaces across Tamil Nadu, combining functional planning with timeless aesthetics.",
+
+            url: window.location.origin,
+
+            logo: `${window.location.origin}/LD_logo.png`,
+
+            image: "https://res.cloudinary.com/dgxdlocja/image/upload/v1788665212/ID_logo_secondary.png",
+
+            telephone: "+91 9361756242",
+
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: "Sekkalai Road",
+              addressLocality: "Karaikudi",
+              addressRegion: "Tamil Nadu",
+              postalCode: "630002",
+              addressCountry: "IN",
+            },
+
+            areaServed: [
+              {
+                "@type": "State",
+                name: "Tamil Nadu",
+              },
+            ],
+
+            serviceType: [
+              "Interior Design",
+              "Exterior Design",
+              "Residential Interior Design",
+              "Commercial Interior Design",
+              "Modular Kitchen Design",
+            ],
+          })}
+        </script>
+      </Helmet>
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
+        <div className="pointer-events-none absolute inset-0">
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-surface" />
         </div>
 
@@ -46,7 +105,7 @@ export default function HomePage() {
                   <picture>
                     <img
                       src="/hero-mobile.png"
-                      alt="Luxury interior design"
+                      alt="Modern luxury living room interior design"
                       className="aspect-[9/11] w-full object-cover"
                       loading="eager"
                     />
@@ -57,16 +116,18 @@ export default function HomePage() {
                   {/* Text overlay on image */}
                   <div className="absolute inset-0 flex flex-col justify-end p-6">
                     <h1 className="font-serif text-3xl leading-[1.05] text-white drop-shadow-lg">
-                      Live beautifully.
+                      Interior Design
                       <span className="block text-gold">
-                        Design with intention.
+                        Made for the Way You Live.
                       </span>
                     </h1>
-                    <p className="mt-4 text-sm text-white/90 drop-shadow-md">
-                      We craft luxury interiors and exteriors with calm palettes, rich textures, and timeless proportions—built for everyday living.
+                    <p className="mt-5 max-w-prose text-muted">
+                       Life Designers creates thoughtfully designed residential and commercial
+                      interiors, modular kitchens, and exterior spaces across Tamil Nadu,
+                      combining functional planning with timeless aesthetics.
                     </p>
                     <div className="mt-6 flex flex-col gap-3">
-                      <Button as={Link} to="/projects" variant="gold" size="lg">
+                      <Button as={Link} to="/projects/interior" variant="gold" size="lg">
                         View Projects
                       </Button>
                     </div>
@@ -80,18 +141,19 @@ export default function HomePage() {
           <div className="hidden md:grid md:grid-cols-2 md:items-center md:gap-10">
             <div>
               <h1 className="font-serif text-4xl leading-[1.05] md:text-6xl">
-                Live beautifully.
+                Interior Design
                 <span className="block text-gold">
-                  Design with intention.
+                  Made for the Way You Live.
                 </span>
               </h1>
               <p className="mt-5 max-w-prose text-muted">
-                We craft luxury interiors and exteriors with calm palettes, rich
-                textures, and timeless proportions—built for everyday living.
+                  Life Designers creates thoughtfully designed residential and commercial
+                  interiors, modular kitchens, and exterior spaces across Tamil Nadu,
+                  combining functional planning with timeless aesthetics.
               </p>
 
               <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-                <Button as={Link} to="/projects" variant="gold" size="lg">
+                <Button as={Link} to="/projects/interior" variant="gold" size="lg">
                   View Projects
                 </Button>
               </div>
@@ -121,7 +183,7 @@ export default function HomePage() {
                   <picture>
                     <img
                       src="/hero-desktop.png"
-                      alt="Luxury interior design"
+                      alt="Modern luxury living room interior design"
                       className="aspect-[4/4] w-full object-cover"
                       loading="eager"
                     />
@@ -151,13 +213,17 @@ export default function HomePage() {
               Crafted spaces, photographed beautifully.
             </h2>
           </div>
-          <Button as={Link} to="/projects" variant="outline" className="shrink-0">
+          <Button as={Link} to="/projects/interior" variant="outline" className="shrink-0">
             See all
           </Button>
         </div>
 
         <div className="mt-8">
-          {loading ? <ProjectGridSkeleton count={6} /> : <ProjectGrid items={items} />}
+          {loading ? (
+            <ProjectGridSkeleton count={4} />
+          ) : (
+            <ProjectGrid items={items} showHoverCta />
+          )}
         </div>
       </section>
 

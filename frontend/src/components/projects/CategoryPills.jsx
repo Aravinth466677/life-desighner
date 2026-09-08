@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const CATEGORIES = [
   { key: "all", label: "All" },
   { key: "interior", label: "Interior" },
@@ -10,10 +12,9 @@ export default function CategoryPills({ value = "all", onChange }) {
       {CATEGORIES.map((c) => {
         const active = value === c.key;
         return (
-          <button
+          <Link
             key={c.key}
-            type="button"
-            onClick={() => onChange?.(c.key)}
+            to={`/projects/${c.key}`}
             className={[
               "rounded-full px-3 py-1.5 text-sm transition-colors border",
               active
@@ -22,7 +23,7 @@ export default function CategoryPills({ value = "all", onChange }) {
             ].join(" ")}
           >
             {c.label}
-          </button>
+          </Link>
         );
       })}
     </div>

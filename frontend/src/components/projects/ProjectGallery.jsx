@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { optimizeCloudinaryImage } from "../../services/cloudinary";
 
 function buildImages(project) {
   const hero = project?.heroImage ?? null;
@@ -42,7 +43,13 @@ export default function ProjectGallery({ project }) {
         <AnimatePresence mode="wait">
           <motion.img
             key={images[active]}
-            src={images[active]}
+            srcSet={`
+              ${optimizeCloudinaryImage(images[active], 480)} 480w,
+              ${optimizeCloudinaryImage(images[active], 800)} 800w,
+              ${optimizeCloudinaryImage(images[active], 1200)} 1200w,
+              ${optimizeCloudinaryImage(images[active], 1600)} 1600w
+            `}
+            sizes="(max-width: 768px) 100vw, 1200px"
             alt={project?.title || "Project image"}
             className="absolute inset-0 h-full w-full object-cover"
             initial={{ opacity: 0, x: 40 }}
