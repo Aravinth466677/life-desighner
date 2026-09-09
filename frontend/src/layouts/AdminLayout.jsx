@@ -1,8 +1,23 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { logoutAdmin } from "@/services/auth";
-import Logo from "@/components/brand/Logo";
 import ThemeToggle from "@/components/ui/ThemeToggle";
 import Noindex from "../components/SEO/Noindex";
+
+const LOGO_URL = "https://res.cloudinary.com/dgxdlocja/image/upload/v1788953942/logo.png";
+
+function AdminLogo() {
+  return (
+    <div className="flex items-center rounded-3xl border border-line bg-white p-2 shadow-soft">
+      <img
+        src={LOGO_URL}
+        alt="Life Designer"
+        className="h-20 w-auto"
+        loading="eager"
+        decoding="async"
+      />
+    </div>
+  );
+}
 
 function NavItem({ to, children }) {
   return (
@@ -35,7 +50,7 @@ export default function AdminLayout() {
       <header className="sticky top-0 z-30 border-b border-line bg-surface/80 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
-            <Logo size="md" />
+            <AdminLogo />
             <span className="text-xs tracking-[0.18em] text-ink/60">
               ADMIN
             </span>

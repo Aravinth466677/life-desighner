@@ -1,8 +1,22 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { optimizeCloudinaryImage } from "../../services/cloudinary";
-import Logo from "@/components/brand/Logo";
 import ThemeToggle from "@/components/ui/ThemeToggle";
+
+const LOGO_URL = "https://res.cloudinary.com/dgxdlocja/image/upload/v1788953942/logo.png";
+
+function SiteLogo() {
+  return (
+    <div className="flex items-center rounded-3xl border border-line bg-white p-2 shadow-soft">
+      <img
+        src={LOGO_URL}
+        alt="Life Designer"
+        className="h-20 w-auto"
+        loading="eager"
+        decoding="async"
+      />
+    </div>
+  );
+}
 
 function NavItem({ to, children }) {
   return (
@@ -21,8 +35,6 @@ function NavItem({ to, children }) {
 export default function SiteHeader() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-  const logo_url="https://res.cloudinary.com/dgxdlocja/image/upload/v1788948877/logo.png";
-
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
@@ -50,7 +62,7 @@ export default function SiteHeader() {
           </button>
 
           <Link to="/" className="mx-auto md:mx-0">
-            <Logo size="xl" />
+            <SiteLogo />
           </Link>
 
           <div className="flex justify-end md:hidden">

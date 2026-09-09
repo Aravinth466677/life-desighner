@@ -26,7 +26,6 @@ export default function HomePage() {
     return () => { alive = false; };
   }, []);
 
-  const logo_url="https://res.cloudinary.com/dgxdlocja/image/upload/v1788948877/logo.png";
   const hero_mopile_url = "https://res.cloudinary.com/dgxdlocja/image/upload/v1788948889/hero-mobile.png";
   const hero_desktop_url = "https://res.cloudinary.com/dgxdlocja/image/upload/v1788948885/hero-desktop.png";
 
@@ -60,7 +59,7 @@ export default function HomePage() {
 
             logo: `${window.location.origin}/LD_logo.png`,
 
-            image: "https://res.cloudinary.com/dgxdlocja/image/upload/v1788665212/ID_logo_secondary.png",
+            image: "https://res.cloudinary.com/dgxdlocja/image/upload/v1788953942/logo.png",
 
             telephone: "+91 9361756242",
 

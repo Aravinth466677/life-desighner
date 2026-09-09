@@ -1,6 +1,21 @@
 import { Link } from "react-router-dom";
-import Logo from "@/components/brand/Logo";
 import { getFooterServices } from "@/services/footerConfig";
+
+const LOGO_URL = "https://res.cloudinary.com/dgxdlocja/image/upload/v1788953942/logo.png";
+
+function FooterLogo() {
+  return (
+    <div className="flex items-center rounded-3xl border border-line bg-white p-2 shadow-soft">
+      <img
+        src={LOGO_URL}
+        alt="Life Designer"
+        className="h-20 w-auto"
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  );
+}
 
 // Split array into columns of max `size` items each
 function chunkBy(arr, size) {
@@ -43,7 +58,7 @@ export default function SiteFooter() {
         {/* Static bottom bar — always present */}
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3">
-            <Logo size="md" />
+            <FooterLogo />
             <p className="text-xs tracking-[0.14em] text-muted uppercase">
               Life Designer
             </p>
