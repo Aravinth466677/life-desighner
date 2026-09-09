@@ -7,7 +7,6 @@ import RequireAdmin from "@/routes/RequireAdmin";
 import HomePage from "@/pages/HomePage";
 import ProjectsPage from "@/pages/ProjectsPage";
 import ProjectPage from "@/pages/ProjectPage";
-import ServicePage from "@/pages/ServicePage";
 import ContactPage from "@/pages/ContactPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 
@@ -29,7 +28,6 @@ export const router = createBrowserRouter([
           { path: "/projects/exterior", element: <ProjectsPage category="exterior" /> },
           { path: "/projects/all", element: <ProjectsPage category="all" /> },
           { path: "/projects/:id", element: <ProjectPage /> },
-          { path: "/services/:slug", element: <ServicePage /> },
           { path: "/contact", element: <ContactPage /> },
         ],
       },

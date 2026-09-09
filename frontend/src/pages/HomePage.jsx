@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-
+import { optimizeCloudinaryImage } from "../services/cloudinary";
 import Button from "@/components/ui/Button";
 import ProjectGrid from "@/components/projects/ProjectGrid";
 import ProjectGridSkeleton from "@/components/projects/ProjectGridSkeleton";
@@ -25,6 +25,10 @@ export default function HomePage() {
       .finally(() => { if (alive) setLoading(false); });
     return () => { alive = false; };
   }, []);
+
+  const logo_url="https://res.cloudinary.com/dgxdlocja/image/upload/v1788948877/logo.png";
+  const hero_mopile_url = "https://res.cloudinary.com/dgxdlocja/image/upload/v1788948889/hero-mobile.png";
+  const hero_desktop_url = "https://res.cloudinary.com/dgxdlocja/image/upload/v1788948885/hero-desktop.png";
 
   return (
     <main>
@@ -104,9 +108,13 @@ export default function HomePage() {
                 <div className="relative">
                   <picture>
                     <img
-                      src="/hero-mobile.png"
+                      srcSet={`
+                                ${optimizeCloudinaryImage(hero_mopile_url, 480)} 480w,
+                                ${optimizeCloudinaryImage(hero_mopile_url, 768)} 768w
+                              `}
+                      sizes="100vw"
                       alt="Modern luxury living room interior design"
-                      className="aspect-[9/11] w-full object-cover"
+                      className=" w-full object-cover"
                       loading="eager"
                     />
                   </picture>
@@ -182,7 +190,13 @@ export default function HomePage() {
                 <div className="relative">
                   <picture>
                     <img
-                      src="/hero-desktop.png"
+                      src={optimizeCloudinaryImage(hero_desktop_url, 1200)}
+                      srcSet={`
+                        ${optimizeCloudinaryImage(hero_desktop_url, 768)} 768w,
+                        ${optimizeCloudinaryImage(hero_desktop_url, 1200)} 1200w,
+                        ${optimizeCloudinaryImage(hero_desktop_url, 1600)} 1600w
+                      `}
+                      sizes="100vw"
                       alt="Modern luxury living room interior design"
                       className="aspect-[4/4] w-full object-cover"
                       loading="eager"

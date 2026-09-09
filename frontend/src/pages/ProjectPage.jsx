@@ -14,6 +14,15 @@ export default function ProjectPage() {
   const [project, setProject] = useState(null);
 
   useEffect(() => {
+    if (project?.title) {
+      document.title = `${project.title} | Life Designer`;
+    }
+    return () => {
+      document.title = "Life Designer | Interior & Exterior Design";
+    };
+  }, [project?.title]);
+
+  useEffect(() => {
     let alive = true;
     setLoading(true);
     setProject(null);

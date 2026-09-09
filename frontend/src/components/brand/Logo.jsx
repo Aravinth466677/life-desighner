@@ -9,7 +9,7 @@ export default function Logo({ size = "md", className = "" }) {
     xl: "h-16",
   };
 
-  const src = "/logo.png";
+  const src = "https://res.cloudinary.com/dgxdlocja/image/upload/v1788948877/logo.png";
   const wrapperClass = [
     "flex items-center gap-2 rounded-3xl border border-line p-2 shadow-soft",
     theme === "dark" ? "bg-white" : "bg-surface",
