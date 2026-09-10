@@ -6,6 +6,7 @@ import Input from "@/components/ui/Input";
 import Modal from "@/components/ui/Modal";
 import Skeleton from "@/components/ui/Skeleton";
 import { useProjects } from "@/hooks/useProjects";
+import { optimizeCloudinaryImage } from "@/services/cloudinary";
 import {
   upsertFooterService,
   removeFooterService,
@@ -262,7 +263,7 @@ function GalleryTab({ project, onAddImages, onDeleteImage, busy }) {
               const imageId = typeof item === "object" ? item.id : null;
               return (
                 <div key={idx} className="relative">
-                  <img src={url} alt="" className="h-20 w-20 rounded-lg object-cover border border-line" />
+                  <img src={optimizeCloudinaryImage(url, 160)} alt="" className="h-20 w-20 rounded-lg object-cover border border-line" />
                   {imageId && (
                     <button
                       type="button"
@@ -451,7 +452,17 @@ export default function AdminProjectsPage() {
             <div key={p.id} className="rounded-2xl border border-line bg-surface shadow-soft overflow-hidden">
               <div className="aspect-[4/3] bg-surface-2">
                 {p.heroImage && (
-                  <img src={p.heroImage} alt={p.title} className="h-full w-full object-cover" loading="lazy" />
+                  <img
+                    src={optimizeCloudinaryImage(p.heroImage, 400)}
+                    srcSet={`
+                      ${optimizeCloudinaryImage(p.heroImage, 400)} 400w,
+                      ${optimizeCloudinaryImage(p.heroImage, 800)} 800w
+                    `}
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    alt={p.title}
+                    className="h-full w-full object-cover"
+                    loading="lazy"
+                  />
                 )}
               </div>
               <div className="p-4">

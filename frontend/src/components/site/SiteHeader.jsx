@@ -1,22 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import ThemeToggle from "@/components/ui/ThemeToggle";
-
-const LOGO_URL = "https://res.cloudinary.com/dgxdlocja/image/upload/v1788953942/logo.png";
-
-function SiteLogo() {
-  return (
-    <div className="flex items-center rounded-3xl border border-line bg-white p-2 shadow-soft">
-      <img
-        src={LOGO_URL}
-        alt="Life Designer"
-        className="h-20 w-auto"
-        loading="eager"
-        decoding="async"
-      />
-    </div>
-  );
-}
+import Logo from "@/components/brand/Logo";
 
 function NavItem({ to, children }) {
   return (
@@ -62,7 +47,7 @@ export default function SiteHeader() {
           </button>
 
           <Link to="/" className="mx-auto md:mx-0">
-            <SiteLogo />
+            <Logo size={"80px"}/>
           </Link>
 
           <div className="flex justify-end md:hidden">

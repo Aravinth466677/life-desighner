@@ -112,9 +112,11 @@ export default function HomePage() {
                                 ${optimizeCloudinaryImage(hero_mopile_url, 768)} 768w
                               `}
                       sizes="100vw"
+                      src={optimizeCloudinaryImage(hero_mopile_url, 768)}
                       alt="Modern luxury living room interior design"
-                      className=" w-full object-cover"
+                      className="aspect-[9/11] w-full object-cover"
                       loading="eager"
+                      fetchPriority="high"
                     />
                   </picture>
                   {/* Mobile gradient overlay for depth */}
@@ -195,10 +197,11 @@ export default function HomePage() {
                         ${optimizeCloudinaryImage(hero_desktop_url, 1200)} 1200w,
                         ${optimizeCloudinaryImage(hero_desktop_url, 1600)} 1600w
                       `}
-                      sizes="100vw"
+                      sizes="(min-width: 1024px) 50vw, 100vw"
                       alt="Modern luxury living room interior design"
                       className="aspect-[4/4] w-full object-cover"
                       loading="eager"
+                      fetchPriority="high"
                     />
                   </picture>
                 </div>

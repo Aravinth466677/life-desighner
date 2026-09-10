@@ -7,25 +7,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import Logo from "@/components/brand/Logo";
 import { adminApi } from "@/services/api";
 import { getAdminToken, setAdminToken } from "@/services/auth";
 import Noindex from "../../components/SEO/Noindex";
-
-const LOGO_URL = "https://res.cloudinary.com/dgxdlocja/image/upload/v1788953942/logo.png";
-
-function LoginLogo() {
-  return (
-    <div className="flex items-center rounded-3xl border border-line bg-white p-2 shadow-soft">
-      <img
-        src={LOGO_URL}
-        alt="Life Designer"
-        className="h-20 w-auto"
-        loading="eager"
-        decoding="async"
-      />
-    </div>
-  );
-}
 
 const schema = z.object({
   email: z.string().trim().email("Enter a valid email"),
@@ -72,7 +57,7 @@ export default function AdminLoginPage() {
       <Noindex/>
       <div className="mx-auto max-w-md px-4 py-12">
         <div className="flex justify-center">
-          <LoginLogo />
+          <Logo />
         </div>
 
         <div className="mt-8 rounded-3xl border border-line bg-surface p-6 shadow-soft md:p-8">
