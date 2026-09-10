@@ -8,6 +8,7 @@ import ProjectGrid from "@/components/projects/ProjectGrid";
 import ProjectGridSkeleton from "@/components/projects/ProjectGridSkeleton";
 import { listProjects } from "@/services/projects";
 import { Helmet } from "react-helmet-async";
+import Heroimage from "../components/brand/Heroimage";
 
 export default function HomePage() {
   const [loading, setLoading] = useState(true);
@@ -105,20 +106,8 @@ export default function HomePage() {
             >
               <div className="overflow-hidden rounded-3xl border border-line bg-surface shadow-soft">
                 <div className="relative">
-                  <picture>
-                    <img
-                      srcSet={`
-                                ${optimizeCloudinaryImage(hero_mopile_url, 480)} 480w,
-                                ${optimizeCloudinaryImage(hero_mopile_url, 768)} 768w
-                              `}
-                      sizes="100vw"
-                      src={optimizeCloudinaryImage(hero_mopile_url, 768)}
-                      alt="Modern luxury living room interior design"
-                      className="aspect-[9/11] w-full object-cover"
-                      loading="eager"
-                      fetchPriority="high"
-                    />
-                  </picture>
+                  <Heroimage url={hero_mopile_url} aspect={"aspect-[9/11]"}/>
+                  
                   {/* Mobile gradient overlay for depth */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
                   
@@ -189,21 +178,7 @@ export default function HomePage() {
             >
               <div className="overflow-hidden rounded-3xl border border-line bg-surface shadow-soft">
                 <div className="relative">
-                  <picture>
-                    <img
-                      src={optimizeCloudinaryImage(hero_desktop_url, 1200)}
-                      srcSet={`
-                        ${optimizeCloudinaryImage(hero_desktop_url, 768)} 768w,
-                        ${optimizeCloudinaryImage(hero_desktop_url, 1200)} 1200w,
-                        ${optimizeCloudinaryImage(hero_desktop_url, 1600)} 1600w
-                      `}
-                      sizes="(min-width: 1024px) 50vw, 100vw"
-                      alt="Modern luxury living room interior design"
-                      className="aspect-[4/4] w-full object-cover"
-                      loading="eager"
-                      fetchPriority="high"
-                    />
-                  </picture>
+                  <Heroimage url={hero_desktop_url} aspect={"aspect-square"}/>
                 </div>
               </div>
               <div className="pointer-events-none absolute -bottom-6 -left-6">
